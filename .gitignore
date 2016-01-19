@@ -1,0 +1,9 @@
+tore
+db.news
+db.sqlite3
+*.pyc
+Thumbs.db
+*/vendor
+project/static/
+*.swp
+project/settings/user.py
