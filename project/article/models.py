@@ -10,13 +10,31 @@ class Article(models.Model):
     """
     Model to keep articles
     """
+
     ext_id = models.UUIDField(primary_key=True, db_index=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, unique=True, db_index=True)
     content = models.TextField()   
     author = models.CharField(max_length=50, blank=True, null=True)
+    sport  = models.OneToOneField('Sport')
     posted_on= models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return "%s by %s" % (self.head, self.author)
+
+
+
+class Sport(models.Model):
+    """
+    Store sport here 
+    """
+
+    ext_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+    def __unicode__(self):
+        return self.name
