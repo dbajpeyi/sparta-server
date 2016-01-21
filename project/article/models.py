@@ -21,7 +21,7 @@ class Article(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "%s by %s" % (self.head, self.author)
+        return "%s by %s" % (self.title, self.author)
 
 
 
