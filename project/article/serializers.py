@@ -4,5 +4,5 @@ from article.models import Article
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ('ext_id', 'title','sport', 'posted_on', 'created')
+        fields = ('ext_id', 'title','sport','content', 'posted_on', 'created')
 
