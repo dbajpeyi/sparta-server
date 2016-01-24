@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'account'
 ]
 
+
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -140,3 +141,10 @@ CORS_ORIGIN_REGEX_WHITELIST = (
     'localhost:9000'
 )
 
+import datetime
+
+JWT_AUTH={
+
+    'JWT_ALLOW_REFRESH' : True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+}
