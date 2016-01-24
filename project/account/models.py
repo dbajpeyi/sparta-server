@@ -26,6 +26,6 @@ class Profile(models.Model):
 
 
     def gravatar_url(self, size):
-        if self.email:
-            return GRAVATAR_URL(self.email)
+        if self.user.email:
+            return GRAVATAR_URL(self.user.email)
 

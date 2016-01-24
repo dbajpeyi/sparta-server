@@ -44,7 +44,7 @@ class Sport(models.Model):
 class LikedArticle(models.Model):
 
     """
-    Articles that user wants to read 
+    Articles that a user wants to read 
     """
 
     ext_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
