@@ -2,6 +2,11 @@ from rest_framework import serializers
 from account.models import Profile 
 from django.contrib.auth.models import User
 
+from rest_framework_jwt.settings import api_settings
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
@@ -11,10 +16,17 @@ class ProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     
     profile = ProfileSerializer()
+    token = serializers.SerializerMethodField('generate_token')
+
+    def generate_token(self, obj):
+        print obj
+        payload = jwt_payload_handler(obj)
+        token = jwt_encode_handler(payload)
+        return token
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'first_name', 'last_name', 'email', 'profile')
+        fields = ('username','password', 'token', 'first_name', 'last_name', 'email', 'profile')
         write_only_field = ('password',)
 
     
