@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from account.models import Profile
 import uuid
 
 # Create your models here.
@@ -38,3 +39,19 @@ class Sport(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class LikedArticle(models.Model):
+
+    """
+    Articles that user wants to read 
+    """
+
+    ext_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    article = models.ForeignKey(Article)
+    profile = models.ForeignKey(Profile)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+
