@@ -11,7 +11,7 @@ from endpoints import GRAVATAR_URL
 class Profile(models.Model):
 
     ext_id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user    = models.ForeignKey(User)
+    user    = models.OneToOneField(User)
     gravatar= models.URLField(max_length=200, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
