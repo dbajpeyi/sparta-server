@@ -1,4 +1,4 @@
-tore
+DStore
 db.news
 db.sqlite3
 *.pyc
@@ -7,3 +7,4 @@ Thumbs.db
 project/static/
 *.swp
 project/settings/user.py
+dump.rdb
