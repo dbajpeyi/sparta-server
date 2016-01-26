@@ -15,6 +15,7 @@ class Article(models.Model):
     ext_id = models.UUIDField(primary_key=True, db_index=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, unique=True, db_index=True)
     content = models.TextField()   
+    summary = models.TextField()
     author = models.CharField(max_length=50, blank=True, null=True)
     sport  = models.OneToOneField('Sport')
     posted_on= models.DateTimeField()

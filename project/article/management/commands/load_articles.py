@@ -25,13 +25,17 @@ class Command(BaseCommand):
             self.sport = sport
             self.load_articles_in_mem()
             obj, created = self.create_sport()
-            self.create_articles_for(obj)
+            #self.create_articles_for(obj)
         logger.info("Articles loaded in memory %s" % len(self.articles))
+        print self.articles[0]
 
 
-    def create_articles_for(self, obj):
-        return
-
+    def create_articles_for(self, sport):
+        print "Creating articles for : %s" % sport
+        for article in self.articles:
+            Article.objects.create(
+                    title = article.get('title'),
+            )
 
 
     def create_sport(self):
@@ -39,7 +43,9 @@ class Command(BaseCommand):
 
     def load_articles_in_mem(self):
         for page in xrange(1,self.NUM_PAGES):
+            print "printing page %s" % page
             url = "{0}{1}/page/{2}".format(self.BASE_URL, self.sport, page) 
+            print "Getting URL: %s" % url 
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             articles_html = soup.findAll("div", { "class" : "articles" })
@@ -53,7 +59,7 @@ class Command(BaseCommand):
     def is_latest(self, latest_article):
         latest_db = Article.objects.order_by('-posted_on').first()
         if latest_db:
-            if self.get_date(latest_article) > latest_db.posted_on:
+            if self.convert_datetime(self.get_date(latest_article)) > latest_db.posted_on:
                 return True
             else:
                 return False
@@ -69,13 +75,35 @@ class Command(BaseCommand):
 
     def json_articles(self, article):
         return {
-            "img" : article.find('img')['src'],
-            "title" : article.find('div', {'class' : 'title'}).find('a').contents[0],
-            "summary" : article.find('p').string.strip(),
-            "posted": self.convert_datetime(
-                article.find('div', {'class' : 'date'}).string.strip() ,
-            )
+            "img" :  self.get_image(article),
+            "title" : self.get_title(article),
+            "content" : self.get_content(article), 
+            "summary" : self.get_summary(article),
+            "posted": self.convert_datetime(self.get_date(article))
         }
+
+        
+        
+    def get_content(self, article):
+        detail_url = article.find('div', {'class' : 'title'}).find('a')['href']
+        response = requests.get(detail_url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        paras = soup.find('div', {'class' : 'full-details'}).find_all('p')
+        content = "\n".join(p.getText() for p in paras)
+        return content
+
+    def get_date(self, article):
+        return article.find('div', {'class' : 'date'}).string.strip()
+
+    def get_title(self, article):
+        return article.find('div', {'class' : 'title'}).find('a').contents[0].strip()
+
+    def get_summary(self, article):
+        return article.find('p').string.strip()
+
+
+    def get_image(self, article):
+        return article.find('img')['src']
 
 
     def convert_datetime(self, date_str):
