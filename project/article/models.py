@@ -16,6 +16,7 @@ class Article(models.Model):
     title = models.CharField(max_length=255, unique=True, db_index=True)
     content = models.TextField()   
     summary = models.TextField()
+    img_url = models.URLField(max_length=200)
     author = models.CharField(max_length=50, blank=True, null=True)
     sport  = models.OneToOneField('Sport')
     posted_on= models.DateTimeField()
