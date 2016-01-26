@@ -8,6 +8,7 @@ from datetime import datetime
 from django.utils import timezone
 import pytz
 from bs4 import BeautifulSoup
+from django.core.cache import cache
 
 
 class Command(BaseCommand):
@@ -44,6 +45,8 @@ class Command(BaseCommand):
 
             if created:
                 self.update_user_in_redis(obj)
+            else:
+                break
 
 
     def update_user_in_redis(self, obj):
@@ -51,7 +54,7 @@ class Command(BaseCommand):
 
         obj_dict = {
                     'title' : obj.title,
-                    'posted_on' : obj.posted_on.strptime("%Y-%m-%d"),
+                    'posted_on' : obj.posted_on.strftime("%Y-%m-%d"),
                     'ext_id' : obj.ext_id,
                     'img_url': obj.img_url,
                     'summary' : obj.summary
@@ -61,10 +64,10 @@ class Command(BaseCommand):
             if cache.has_key(user.ext_id):
                 value = cache.get(user.ext_id)
                 value.append(obj_dict)
-                cache.set(user.ext_id, value)
+                cache.set(user.ext_id, value, timeout=None)
             else:
                 first_value = []
-                value = cache.set(user.ext_id, first_value.append(obj_dict))
+                value = cache.set(user.ext_id, first_value.append(obj_dict), timeout=None)
 
 
     def create_sport(self):
