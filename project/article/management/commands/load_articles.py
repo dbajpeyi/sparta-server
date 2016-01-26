@@ -4,6 +4,7 @@ import requests
 import logging
 from article.models import *
 from account.models import *
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -41,7 +42,12 @@ class Command(BaseCommand):
             "img" : article.find('img')['src'],
             "title" : article.find('div', {'class' : 'title'}).find('a').contents[0],
             "summary" : article.find('p').string.strip(),
-            "posted": article.find('div', {'class' : 'date'}).string.strip() ,
+            "posted": self.convert_datetime(
+                article.find('div', {'class' : 'date'}).string.strip() ,
+            )
         }
+
+    def convert_datetime(self, date_str):
+       return  datetime.strptime(date_str, "%B %d, %Y %I:%M %p")
 
 
