@@ -53,27 +53,17 @@ class Command(BaseCommand):
     def update_user_in_redis(self, obj):
         users = Profile.objects.all()
 
-        obj_json = {
-                    'title' : obj.title,
-                    'posted_on' : obj.posted_on.strftime("%Y-%m-%d"),
-                    'ext_id' : obj.ext_id,
-                    'img_url': obj.img_url,
-                    'summary' : obj.summary,
-                    'sport' : obj.sport.name
-        }
-        print obj_json
-
         for user in users:
             print user
             if cache.has_key(user.ext_id):
                 value = cache.get(user.ext_id)
-                value.append(obj_json)
+                value.append(obj)
                 cache.set(user.ext_id, value, timeout=None)
             else:
                 print "No key"
-                json_rep = []
-                json_rep.append(obj_json)
-                cache.set(user.ext_id, json_rep, timeout=None)
+                fresh_value = []
+                fresh_value.append(obj)
+                cache.set(user.ext_id, fresh_value, timeout=None)
 
 
     def create_sport(self):
