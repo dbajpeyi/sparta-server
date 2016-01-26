@@ -26,9 +26,7 @@ class Command(BaseCommand):
             self.load_articles_in_mem()
             obj, created = self.create_sport()
             self.create_articles_for(obj)
-            #self.articles = []
         logger.info("Articles loaded in memory %s" % len(self.articles))
-        print len(self.articles)
 
 
     def create_articles_for(self, obj):
