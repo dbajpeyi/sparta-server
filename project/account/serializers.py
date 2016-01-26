@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.core.cache import cache
 from account.models import Profile 
+from article.models import Article
 from django.contrib.auth.models import User
 
 from rest_framework_jwt.settings import api_settings
@@ -40,5 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
                 last_name = validated_data['last_name']
                 
             )
-        Profile.objects.create(user = user, **profile_data)
+        p = Profile.objects.create(user = user, **profile_data)
+        self._update_user_in_redis(p)
         return user
+
+    def _update_user_in_redis(self, profile):
+        cache.set(profile.ext_id, Article.objects.all(), timeout=None)
+                
+
