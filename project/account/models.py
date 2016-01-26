@@ -17,7 +17,7 @@ class Profile(models.Model):
     updated = models.DateTimeField(auto_now=True, null=True)
 
     def __unicode__(self):
-        return self.name
+        return self.user.first_name
 
     def save(self, *args, **kwargs):
         if not self.gravatar:

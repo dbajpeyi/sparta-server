@@ -7,6 +7,7 @@ from account.models import *
 from datetime import datetime
 from django.utils import timezone
 import pytz
+import json
 from bs4 import BeautifulSoup
 from django.core.cache import cache
 
@@ -15,7 +16,7 @@ class Command(BaseCommand):
     
     SPORTS = ['cricket', 'football']
     BASE_URL = settings.ARTICLE_URL
-    NUM_PAGES = 5
+    NUM_PAGES = 2
     articles = []
 
     def handle(self, *args, **options):
@@ -36,38 +37,43 @@ class Command(BaseCommand):
         for article in self.articles:
             obj, created = Article.objects.get_or_create(
                     title = article.get('title'),
-                    sport = sport,
-                    posted_on = article.get('posted'),
-                    img_url = article.get('img'),
-                    content = article.get('content'),
-                    summary = article.get('summary')
+                    defaults = {
+                        'sport' : sport,
+                        'posted_on' : article.get('posted'),
+                        'img_url' : article.get('img'),
+                        'content' : article.get('content'),
+                        'summary' : article.get('summary')
+                    }
             )
 
             if created:
+                print "Creating article in redis"
                 self.update_user_in_redis(obj)
-            else:
-                break
-
 
     def update_user_in_redis(self, obj):
         users = Profile.objects.all()
 
-        obj_dict = {
+        obj_json = {
                     'title' : obj.title,
                     'posted_on' : obj.posted_on.strftime("%Y-%m-%d"),
                     'ext_id' : obj.ext_id,
                     'img_url': obj.img_url,
-                    'summary' : obj.summary
+                    'summary' : obj.summary,
+                    'sport' : obj.sport.name
         }
+        print obj_json
 
         for user in users:
+            print user
             if cache.has_key(user.ext_id):
                 value = cache.get(user.ext_id)
-                value.append(obj_dict)
+                value.append(obj_json)
                 cache.set(user.ext_id, value, timeout=None)
             else:
-                first_value = []
-                value = cache.set(user.ext_id, first_value.append(obj_dict), timeout=None)
+                print "No key"
+                json_rep = []
+                json_rep.append(obj_json)
+                cache.set(user.ext_id, json_rep, timeout=None)
 
 
     def create_sport(self):
