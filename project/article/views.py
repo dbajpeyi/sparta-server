@@ -21,7 +21,6 @@ class ArticleList(APIView):
         user = self.get_user_for(username)
         if self.redis_data_for(user):
             serializer = ArticleSerializer(self.redis_data_for(user), many=True)
-
         serializer = ArticleSerializer(self.get_db_articles_for(user), many=True)
         return Response(serializer.data)
 
@@ -34,6 +33,7 @@ class ArticleList(APIView):
 
     def get_db_articles_for(self, user):
         liked_articles = LikedArticle.objects.filter(profile = user)
+        #TODO: In case redis flops, This query needs to only give the latest and the nonliked stuff
         return Article.objects.exclude(likedarticle__in = liked_articles)
                 
 

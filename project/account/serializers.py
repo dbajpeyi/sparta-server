@@ -47,6 +47,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def _update_user_in_redis(self, profile):
-        cache.set(profile.ext_id, Article.objects.all(), timeout=None)
+        cache.set(profile.ext_id, list(Article.objects.all()), timeout=None)
                 
 

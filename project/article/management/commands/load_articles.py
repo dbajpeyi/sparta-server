@@ -56,7 +56,7 @@ class Command(BaseCommand):
         for user in users:
             print user
             if cache.has_key(user.ext_id):
-                value = cache.get(user.ext_id)
+                value = list(cache.get(user.ext_id))
                 value.append(obj)
                 cache.set(user.ext_id, value, timeout=None)
             else:
