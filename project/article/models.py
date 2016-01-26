@@ -18,7 +18,7 @@ class Article(models.Model):
     summary = models.TextField()
     img_url = models.URLField(max_length=200)
     author = models.CharField(max_length=50, blank=True, null=True)
-    sport  = models.OneToOneField('Sport')
+    sport  = models.ForeignKey('Sport')
     posted_on= models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

@@ -27,27 +27,45 @@ class Command(BaseCommand):
             obj, created = self.create_sport()
             self.create_articles_for(obj)
         logger.info("Articles loaded in memory %s" % len(self.articles))
-        print self.articles[0]
+        print "articles loaded into memory"
 
 
     def create_articles_for(self, sport):
         print "Creating articles for : %s" % sport
         for article in self.articles:
             obj, created = Article.objects.get_or_create(
-                    title : article.get('title'),
-                    sport : sport,
-                    posted_on = article.get('posted')
-                    image_url = article.get('img'),
+                    title = article.get('title'),
+                    sport = sport,
+                    posted_on = article.get('posted'),
+                    img_url = article.get('img'),
                     content = article.get('content'),
                     summary = article.get('summary')
             )
 
             if created:
-                self.update_users_in_redis(obj.ext_id)
+                self.update_user_in_redis(obj)
 
 
-    def update_user_in_redis(self, ext_id):
-        pass
+    def update_user_in_redis(self, obj):
+        users = Profile.objects.all()
+
+        obj_dict = {
+                    'title' : obj.title,
+                    'posted_on' : obj.posted_on.strptime("%Y-%m-%d"),
+                    'ext_id' : obj.ext_id,
+                    'img_url': obj.img_url,
+                    'summary' : obj.summary
+        }
+
+        for user in users:
+            if cache.has_key(user.ext_id):
+                value = cache.get(user.ext_id)
+                value.append(obj_dict)
+                cache.set(user.ext_id, value)
+            else:
+                first_value = []
+                value = cache.set(user.ext_id, first_value.append(obj_dict))
+
 
     def create_sport(self):
         return Sport.objects.get_or_create(name=self.sport, defaults={'name' : self.sport})
