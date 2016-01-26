@@ -25,7 +25,7 @@ class Command(BaseCommand):
             self.sport = sport
             self.load_articles_in_mem()
             obj, created = self.create_sport()
-            #self.create_articles_for(obj)
+            self.create_articles_for(obj)
         logger.info("Articles loaded in memory %s" % len(self.articles))
         print self.articles[0]
 
@@ -33,10 +33,21 @@ class Command(BaseCommand):
     def create_articles_for(self, sport):
         print "Creating articles for : %s" % sport
         for article in self.articles:
-            Article.objects.create(
-                    title = article.get('title'),
+            obj, created = Article.objects.get_or_create(
+                    title : article.get('title'),
+                    sport : sport,
+                    posted_on = article.get('posted')
+                    image_url = article.get('img'),
+                    content = article.get('content'),
+                    summary = article.get('summary')
             )
 
+            if created:
+                self.update_users_in_redis(obj.ext_id)
+
+
+    def update_user_in_redis(self, ext_id):
+        pass
 
     def create_sport(self):
         return Sport.objects.get_or_create(name=self.sport, defaults={'name' : self.sport})
@@ -50,11 +61,8 @@ class Command(BaseCommand):
             soup = BeautifulSoup(response.text, 'html.parser')
             articles_html = soup.findAll("div", { "class" : "articles" })
             latest_article = articles_html[0]
-            if self.is_latest(latest_article):
-                json_articles = map(self.json_articles, articles_html)
-                self.articles.extend(json_articles)
-            else:
-                break
+            json_articles = map(self.json_articles, articles_html)
+            self.articles.extend(json_articles)
 
     def is_latest(self, latest_article):
         latest_db = Article.objects.order_by('-posted_on').first()
@@ -72,7 +80,6 @@ class Command(BaseCommand):
                {'class' : 'date'}).string.strip()
            )
 
-
     def json_articles(self, article):
         return {
             "img" :  self.get_image(article),
@@ -81,7 +88,6 @@ class Command(BaseCommand):
             "summary" : self.get_summary(article),
             "posted": self.convert_datetime(self.get_date(article))
         }
-
         
         
     def get_content(self, article):
