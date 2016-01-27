@@ -55,5 +55,19 @@ class LikedArticle(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+class UnlikedLikedArticle(models.Model):
+
+    """
+    Articles that a user does not want to read 
+    """
+
+    ext_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    article = models.ForeignKey(Article)
+    profile = models.ForeignKey(Profile)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+
 
 
