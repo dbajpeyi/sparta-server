@@ -28,8 +28,16 @@ class ArticleList(APIView):
                 
 
 
+class LikeUnlikeBase(APIView):
 
-class LikeArticle(APIView):
+    def get_201_done(self, serializer):
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_200_exists(self, message):
+        return Response({'message' : message}, status=status.HTTP_200_OK)
+
+
+class LikeArticle(LikeUnlikeBase):
 
     def post(self, request, format=None):
         user = get_user_from(request)
@@ -40,7 +48,21 @@ class LikeArticle(APIView):
                 )
         serializer = LikedArticleSerializer(instance = liked_article)
         if created:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'message' : 'Already liked'}, status=status.HTTP_200_OK)
+            return self.get_201_done(serializer)
+        return self.get_200_exists("Already liked")
+        
+class UnlikeArticle(LikeUnlikeBase):
+
+    def post(self, request, format=None):
+        user = get_user_from(request)
+        article = Article.objects.get(ext_id = request.POST.get('ext_id'))
+        unliked_article, created = UnlikedArticle.objects.get_or_create(
+                    profile = user,
+                    article = article 
+                )
+        serializer = UnlikedArticleSerializer(instance = liked_article)
+        if created:
+            return self.get_201_done(serializer)
+        return self.get_200_exists("Already unliked")
         
 
