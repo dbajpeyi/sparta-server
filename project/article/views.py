@@ -6,7 +6,7 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from article.serializers import ArticleSerializer
+from article.serializers import * 
 from rest_framework_jwt.authentication import jwt_decode_handler
 from rest_framework_jwt.authentication import jwt_get_username_from_payload 
 from rest_framework.authentication import get_authorization_header
@@ -37,12 +37,28 @@ class ArticleList(APIView):
         return Article.objects.exclude(likedarticle__in = liked_articles)
                 
 
+
+
+class LikeArticle(APIView):
+
     def post(self, request, format=None):
-        serializer = ArticleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        auth = get_authorization_header(request).split()[1]
+        payload = jwt_decode_handler(auth)
+        username = jwt_get_username_from_payload(payload)
+        user = self.get_user_for(username)
+        article = Article.objects.get(ext_id = request.POST.get('ext_id'))
+        liked_article, created = LikedArticle.objects.get_or_create(
+                    profile = user,
+                    article = article 
+                )
+        serializer = LikedArticleSerializer(instance = liked_article)
+        if created:
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message' : 'Article already exists'}, status=status.HTTP_200_OK)
+        
+
+    def get_user_for(self, username):
+        return Profile.objects.get(user = User.objects.get(username = username))
 
 
 
