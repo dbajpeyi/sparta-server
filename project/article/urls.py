@@ -4,7 +4,8 @@ from article import views
 
 urlpatterns = [
     url(r'^articles$', views.ArticleList.as_view()),
-    url(r'^articles/like$', views.LikeArticle.as_view()),
+    url(r'^article/like$', views.LikeArticle.as_view()),
+    #url(r'^article/unlike$', views.UnlikeLikeArticle.as_view()),
     #url(r'^articles/(?P<pk>[0-9]+)/$', views.ArticleDetail.as_view()),
 ]
 
