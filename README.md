@@ -37,6 +37,8 @@ $python manage.py runserver
 ```
 Server at `https://localhost:8000`
 
+Oh! and create a `user.py` file which has db and redis settings 
+
 #Running the load-script
 
 From the project directory where `manage.py` is:
