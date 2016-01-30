@@ -19,3 +19,14 @@ class CreateUserView(CreateAPIView):
 
 
 
+class LikedArticleCountView(APIView):
+    def get(self, request, format=None):
+        user = get_user_from(request)
+        count = ArticleAction.objects.filter(profile=user, is_liked=True).count()
+        return Response({'count' : count})
+
+        
+
+
+
+
