@@ -6,6 +6,4 @@ Thumbs.db
 */vendor
 project/static/
 *.swp
-project/settings/user.py
 dump.rdb
-user.py
