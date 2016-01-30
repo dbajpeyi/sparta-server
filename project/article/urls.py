@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^articles$', views.ArticleList.as_view()),
     url(r'^article/action$', views.ArticleActionView.as_view()),
     url(r'^articles/liked$', views.LikedArticleListView.as_view()),
+    url(r'^article/(?P<ext_id>[^/]+)$', views.ArticleDetailView.as_view()),
     url(r'^article/read/(?P<ext_id>[^/]+)$', views.ReadArticleView.as_view()),
     #url(r'^article/unlike$', views.UnlikeLikeArticle.as_view()),
     #url(r'^articles/(?P<pk>[0-9]+)/$', views.ArticleDetail.as_view()),

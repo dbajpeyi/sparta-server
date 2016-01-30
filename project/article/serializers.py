@@ -8,6 +8,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('ext_id', 'title','sport', 'posted_on', 'summary', 'img_url')
 
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ('title', 'img_url', 'content', 'posted_on')
 
 class ArticleActionSerializer(serializers.ModelSerializer):
     article = ArticleSerializer()
