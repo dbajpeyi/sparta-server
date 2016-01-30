@@ -33,7 +33,7 @@ class ArticleActionView(APIView):
     def remove_from_redis(self, key, article):
         articles = cache.get(key)
         articles.remove(article)
-        cache.set(key, articles)
+        cache.set(key, articles, timeout=None)
 
     def post(self, request, format=None):
         user = get_user_from(request)
