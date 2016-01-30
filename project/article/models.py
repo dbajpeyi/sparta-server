@@ -49,6 +49,7 @@ class ArticleAction(models.Model):
     article = models.ForeignKey(Article)
     profile = models.ForeignKey(Profile)
     is_liked= models.BooleanField(db_index=True)
+    is_read = models.BooleanField(db_index=True, default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     

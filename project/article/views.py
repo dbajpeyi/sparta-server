@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from article.serializers import * 
 from account.utils import *
+from rest_framework.generics import ListAPIView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -43,6 +44,13 @@ class ArticleList(APIView):
         return objects 
 
                 
+class LikedArticleListView(ListAPIView):
+
+    serializer_class = ArticleActionSerializer
+
+    def get_queryset(self):
+        user = get_user_from(self.request)
+        return ArticleAction.objects.filter(profile=user, is_liked=True)
 
 
 class ArticleActionView(APIView):
@@ -67,6 +75,18 @@ class ArticleActionView(APIView):
         if created:
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message' : 'Already liked/unliked article'}, status=status.HTTP_200_OK)
+
+class ReadArticleView(APIView):
+
+    def put(self, request, ext_id, format=None):
+        user = get_user_from(request)
+        article = Article.objects.get(ext_id = ext_id)
+        article_action = ArticleAction.objects.get(profile=user, article=article)
+        article_action.is_read=True
+        article_action.save()
+        serializer = ArticleActionSerializer(instance = article_action)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
         
