@@ -27,7 +27,7 @@ class ArticleList(APIView):
 
     def get_db_articles_for(self, user):
         actioned_articles = ArticleAction.objects.filter(profile = user).values_list('article', flat=True)
-        articles = Article.objects.exclude(articleaction__article__in = actioned_articles)
+        articles = Article.objects.exclude(articleaction__article__in = actioned_articles).order_by('-posted_on')
         return self.paginate_result(articles)
 
     def paginate_result(self, objects):

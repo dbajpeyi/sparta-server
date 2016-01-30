@@ -57,7 +57,8 @@ class Command(BaseCommand):
             print user
             if cache.has_key(user.ext_id):
                 value = list(cache.get(user.ext_id))
-                value.append(obj)
+                if obj not in value:
+                    value.append(obj)
                 cache.set(user.ext_id, value, timeout=None)
             else:
                 print "No key"
@@ -80,6 +81,7 @@ class Command(BaseCommand):
             latest_article = articles_html[0]
             json_articles = map(self.json_articles, articles_html)
             self.articles.extend(json_articles)
+            self.articles.sort(key=lambda k: k.get('posted'))
 
     def is_latest(self, latest_article):
         latest_db = Article.objects.order_by('-posted_on').first()
