@@ -3,7 +3,7 @@
 - A sports article API server in Django
 
 Crawls news sites and exposes news article data using Django Rest Framework.
-Protects resources using token based session-less auth
+Protects resources using token based stateless auth
 
 
 #Tools used:
@@ -14,7 +14,9 @@ Protects resources using token based session-less auth
     - Used here as a persistent cache. Storing news articles that are new and  user has not liked yet 
 
 - Django rest framework JWT
-    - Using this for session less auth. The backend does not store any sessions to keep user logged in
+    - Using this for stateless auth. The backend does not have to store any sessions to keep the user logged in.
+      
+        
 
 #Caching strategy
 
@@ -27,7 +29,9 @@ is liked/unliked by the user is removed from the redis cache.
 Install [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/)
 
 Install [redis](http://redis.io/download)
+
 `mkvirtualenv sparta`
+
 ```
 $git clone git@github.com:dbajpeyi/sparta-server.git
 $pip install -r requirements.txt
