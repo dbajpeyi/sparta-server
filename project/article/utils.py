@@ -16,3 +16,4 @@ def get_user_from(request):
 def _get_user_for(username):
     return Profile.objects.get(user = User.objects.get(username = username))
 
+

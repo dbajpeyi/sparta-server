@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from article.models import *
+from article.models import Article, ArticleAction 
 from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,47 +22,32 @@ class ArticleList(APIView):
             return cache.get(user.ext_id)
 
     def get_db_articles_for(self, user):
-        liked_articles = LikedArticle.objects.filter(profile = user)
+        liked_articles = ArticleAction.objects.filter(profile = user, is_liked=True).values_list('article', flat=True)
         #TODO: In case redis flops, This query needs to only give the latest and the nonliked stuff
-        return Article.objects.exclude(likedarticle__in = liked_articles)
+        return Article.objects.exclude(articleaction__article__in = liked_articles)
                 
 
 
-class LikeUnlikeBase(APIView):
+class ArticleActionView(APIView):
 
-    def get_201_done(self, serializer):
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def get_200_exists(self, message):
-        return Response({'message' : message}, status=status.HTTP_200_OK)
-
-
-class LikeArticle(LikeUnlikeBase):
+    def remove_from_redis(self, key, article):
+        articles = cache.get(key)
+        articles.remove(article)
+        cache.set(key, articles)
 
     def post(self, request, format=None):
         user = get_user_from(request)
-        article = Article.objects.get(ext_id = request.POST.get('ext_id'))
-        liked_article, created = LikedArticle.objects.get_or_create(
+        article = Article.objects.get(ext_id = request.data.get('ext_id'))
+        self.remove_from_redis(user.ext_id, article)
+        is_liked = request.data.get('is_liked')
+        article_action, created = ArticleAction.objects.get_or_create(
                     profile = user,
-                    article = article 
+                    article = article,
+                    is_liked= is_liked
                 )
-        serializer = LikedArticleSerializer(instance = liked_article)
+        serializer = ArticleActionSerializer(instance = article_action)
         if created:
-            return self.get_201_done(serializer)
-        return self.get_200_exists("Already liked")
-        
-class UnlikeArticle(LikeUnlikeBase):
-
-    def post(self, request, format=None):
-        user = get_user_from(request)
-        article = Article.objects.get(ext_id = request.POST.get('ext_id'))
-        unliked_article, created = UnlikedArticle.objects.get_or_create(
-                    profile = user,
-                    article = article 
-                )
-        serializer = UnlikedArticleSerializer(instance = liked_article)
-        if created:
-            return self.get_201_done(serializer)
-        return self.get_200_exists("Already unliked")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'message' : 'Already liked/unliked article'}, status=status.HTTP_200_OK)
         
 
