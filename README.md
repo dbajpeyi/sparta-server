@@ -28,9 +28,15 @@ is liked/unliked by the user is removed from the redis cache.
 
 Install [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/)
 
-Install [redis](http://redis.io/download)
 
 `mkvirtualenv sparta`
+
+
+
+Install [redis](http://redis.io/download)    
+
+
+
 
 ```
 $git clone git@github.com:dbajpeyi/sparta-server.git
