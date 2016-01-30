@@ -68,11 +68,6 @@ class ArticleActionView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message' : 'Already liked/unliked article'}, status=status.HTTP_200_OK)
 
-class LikedArticleCountView(APIView):
-    def get(self, request, format=None):
-        user = get_user_from(request)
-        count = ArticleAction.objects.filter(profile=user, is_liked=True).count()
-        return Response({'count' : count})
 
         
 
