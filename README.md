@@ -29,7 +29,6 @@ is liked/unliked by the user is removed from the redis cache.
 Install [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/)
 
 
-`mkvirtualenv sparta`
 
 
 
@@ -39,8 +38,9 @@ Install [redis](http://redis.io/download)
 
 
 ```
-$git clone git@github.com:dbajpeyi/sparta-server.git
-$pip install -r requirements.txt
+$git clone git@github.com:dbajpeyi/sparta-server.git .
+`mkvirtualenv sparta`
+$cd sparta-server && pip install -r requirements.txt
 $cd project
 $python manage.py migrate
 $python manage.py runserver
